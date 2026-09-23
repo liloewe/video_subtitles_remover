@@ -8,11 +8,11 @@ import requests
 from flask import Flask, jsonify, request
 
 
-API_URL = "http://127.0.0.1:8029/api/v1/video_subtitle_remover"
+API_URL = "http://127.0.0.1:4076/api/v1/video_subtitle_remover"
 CALLBACK_URL = "http://127.0.0.1:8003/api/v1/callbacks/subtitle-removal"
 CALLBACK_HOST = "0.0.0.0"
 CALLBACK_PORT = 8003
-CALLBACK_DOWNLOAD_DIR = Path("/home/tianzhiuser/datasets/callback_downloads1")
+CALLBACK_DOWNLOAD_DIR = Path("./datasets/callback_downloads1")
 LOCAL_VIDEO = Path(
     # "/home/tianzhiuser/project/video_subtitles_remover/resources/video/婚礼当天/01.mp4"
     # "/home/tianzhiuser/project/video_subtitles_remover/resources/video/余公公/01.mp4"
@@ -22,7 +22,7 @@ LOCAL_VIDEO = Path(
     # "/home/tianzhiuser/project/video_subtitles_remover/resources/ted.mp4"
     # "/home/tianzhiuser/project/video_subtitles_remover/resources/video/上司/02.mp4"
     # "/home/tianzhiuser/project/video_subtitles_remover/resources/video/pw6c6_1975847.mp4"
-    "/home/tianzhiuser/project/video_subtitles_remover/resources/video/让你花钱/54.mp4"
+    "3.mp4"
 
 )
 

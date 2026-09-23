@@ -41,6 +41,14 @@ def setting(name, default):
     return os.environ.get(name, _CONFIG.defaults().get(name, default))
 
 
+def resolve_runtime_path(value):
+    """Resolve relative API paths from the project root, independent of cwd."""
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = RESOURCES_DIR / path
+    return path.resolve()
+
+
 for _path in (str(BACKEND_DIR), str(RESOURCES_DIR)):
     if _path not in sys.path:
         sys.path.insert(0, _path)
@@ -57,10 +65,10 @@ PPOCRV6_DET_MODEL_DIR = BACKEND_DIR / "models" / "V6" / "PP-OCRv6_medium_det"
 PPOCRV6_REC_MODEL_DIR = BACKEND_DIR / "models" / "V6" / "PP-OCRv6_medium_rec"
 STTN_DET_MODEL_PATH = BACKEND_DIR / "models" / "sttn-det" / "sttn.pth"
 
-DOWNLOAD_DIR = Path(
+DOWNLOAD_DIR = resolve_runtime_path(
     setting("API_DOWNLOAD_DIR", "/mnt/nas_share_woka/video_subtitle_remover/downloads")
 )
-PROCESSED_DIR = Path(
+PROCESSED_DIR = resolve_runtime_path(
     setting("API_PROCESSED_DIR", "/mnt/nas_share_woka/video_subtitle_remover/processed")
 )
 # PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
