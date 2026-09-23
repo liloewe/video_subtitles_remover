@@ -1,0 +1,16 @@
+
+__pycache__
+/resources/.venv/
+/Python/
+*.mp4
+/resources/video/
+/opt/
+
+logs/app.log
+/ProPainter/
+*.jsonlS
+ui
+test
+video_subtitle_remover
+docker
+design

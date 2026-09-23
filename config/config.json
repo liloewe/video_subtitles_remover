@@ -1,0 +1,41 @@
+{
+    "Main": {
+        "CheckUpdateOnStartup": true,
+        "HardwareAcceleration": true,
+        "InpaintMode": "sttn-det",
+        "SaveDirectory": "",
+        "SubtitleAreaDeviationPixel": 10,
+        "SubtitleAreaPixelToleranceXPixel": 20,
+        "SubtitleAreaPixelToleranceYPixel": 20,
+        "SubtitleAreaYAxisDifferencePixel": 20,
+        "SubtitleDetectMode": "PP-OCRv4-Server",
+        "SubtitleSelectionAreas": "0.6213,0.7981,0.3799,0.6289",
+        "SubtitleTimelineBackwardFrameCount": 3,
+        "subtitleTimelineForwardFrameCount": 3,
+        "SubtitleYXAxisDifferencePixel": 10
+    },
+    "Window": {
+        "Interface": "en",
+        "Height": 878,
+        "Width": 1414,
+        "X": 121,
+        "Y": 98
+    },
+    "ProPainter": {
+        "MaxLoadNum": 70
+    },
+    "Sttn": {
+        "MaxLoadNum": 50,
+        "NeighborStride": 5,
+        "ReferenceLength": 10
+    },
+    "Api": {
+        "DownloadDirectory": "/home/tianzhiuser/datasets/downloads",
+        "ProcessedDirectory": "/home/tianzhiuser/datasets/processed",
+        "PublicBaseUrl": "http://127.0.0.1:5052"
+    },
+    "QFluentWidgets": {
+        "ThemeColor": "#ff009faa",
+        "ThemeMode": "Light"
+    }
+}
