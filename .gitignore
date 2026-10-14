@@ -15,3 +15,4 @@ video_subtitle_remover
 docker
 design
 video_subtitle_remover_api_direct_v6.conf
+call_sub.py

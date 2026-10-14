@@ -94,11 +94,6 @@ OCR_RECOGNIZE_EVERY_N_FRAMES = max(
 OCR_RECOGNITION_MIN_SCORE = float(
     setting("OCR_RECOGNITION_MIN_SCORE", "0.70")
 )
-# Keep the same geometric false-positive filters as v6_middle.py.
-OCR_MAX_TILT_DEGREES = float(setting("OCR_MAX_TILT_DEGREES", "15"))
-OCR_REMOVE_MIN_Y_RATIO = float(setting("OCR_REMOVE_MIN_Y_RATIO", "0.5"))
-OCR_MAX_BOX_HEIGHT_RATIO = float(setting("OCR_MAX_BOX_HEIGHT_RATIO", "0.20"))
-OCR_MAX_BOX_AREA_RATIO = float(setting("OCR_MAX_BOX_AREA_RATIO", "0.12"))
 # Only white, high-contrast subtitle text is eligible for inpainting.
 OCR_FILTER_WHITE_TEXT = setting("OCR_FILTER_WHITE_TEXT", "1").lower() in {
     "1", "true", "yes", "on"
@@ -193,30 +188,6 @@ class PPOCRV6Detector:
         )
         transform = cv2.getPerspectiveTransform(points, target)
         return cv2.warpPerspective(image, transform, (crop_width, crop_height))
-
-    @staticmethod
-    def _tilt_degrees(polygon):
-        points = np.asarray(polygon, dtype=np.float32).reshape(-1, 2)
-        if len(points) < 2:
-            return 90.0
-        edges = points - np.roll(points, 1, axis=0)
-        lengths = np.linalg.norm(edges, axis=1)
-        edge = edges[int(np.argmax(lengths))]
-        angle = float(np.degrees(np.arctan2(edge[1], edge[0])))
-        angle = (angle + 90.0) % 180.0 - 90.0
-        return abs(angle)
-
-    @staticmethod
-    def _center_y(polygon):
-        points = np.asarray(polygon, dtype=np.float32).reshape(-1, 2)
-        return float(points[:, 1].min() + points[:, 1].max()) / 2.0
-
-    @staticmethod
-    def _box_size(polygon):
-        points = np.asarray(polygon, dtype=np.float32).reshape(-1, 2)
-        width = max(0.0, float(points[:, 0].max() - points[:, 0].min()))
-        height = max(0.0, float(points[:, 1].max() - points[:, 1].min()))
-        return width, height
 
     @staticmethod
     def _white_text_score(image, polygon):
@@ -322,19 +293,7 @@ class PPOCRV6Detector:
         detected_polygons = all_boxes.astype(int).tolist()
         self.last_ocr_results = []
         self.last_ocr_error = None
-        frame_height = float(np.asarray(image).shape[0])
-        min_center_y = frame_height * OCR_REMOVE_MIN_Y_RATIO
-        skipped_indexes = set()
-        if OCR_REMOVE_MIN_Y_RATIO > 0:
-            skipped_indexes.update(index for index, box in enumerate(all_boxes) if self._center_y(box) < min_center_y)
-        frame_area = max(1.0, float(np.asarray(image).shape[0] * np.asarray(image).shape[1]))
-        for index, box in enumerate(all_boxes):
-            if self._tilt_degrees(box) > OCR_MAX_TILT_DEGREES:
-                skipped_indexes.add(index)
-            box_width, box_height = self._box_size(box)
-            if (box_height / max(1.0, frame_height) > OCR_MAX_BOX_HEIGHT_RATIO or box_width * box_height / frame_area > OCR_MAX_BOX_AREA_RATIO):
-                skipped_indexes.add(index)
-        kept_indexes = [index for index in range(len(all_boxes)) if index not in skipped_indexes]
+        kept_indexes = list(range(len(all_boxes)))
 
         # First confirm that the detection is readable text.
         if self.recognizer is not None and kept_indexes:
@@ -727,6 +686,11 @@ def process_job(job_id, video_url, callback_url):
 @app.route("/api/v1/processed/<path:filename>", methods=["GET"])
 def processed_video(filename):
     # conditional=True enables Range/conditional responses used by HTML5 video.
+    requested_path = PROCESSED_DIR / filename
+    log_parameters(
+        "processed download",
+        {"filename": filename, "processed_dir": str(PROCESSED_DIR), "exists": requested_path.is_file()},
+    )
     return send_from_directory(
         PROCESSED_DIR,
         filename,
